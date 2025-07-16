@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
-import { makeJwtService } from 'system/jwt/factory'
+import { makeJwtService } from '../../system/jwt/factory'
 import { UserService } from '../user/user.service'
 
 export class AuthMiddleware {
-  static requireAuth(req: Request, res: Response, next: NextFunction) {
+  static async requireAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const authHeader = req.headers['authorization']
       if (!authHeader) throw new Error('No Authorization header')
@@ -12,9 +12,9 @@ export class AuthMiddleware {
       if (!token) throw new Error('No token provided')
 
       const jwtService = makeJwtService();
-      const payload = jwtService.verifyAccess(token);
+      const payload = await jwtService.verifyAccess(token);
 
-      const user = UserService.init().getById(payload.id);
+      const user = await UserService.init().getById(payload.id);
 
       (req as any).user = user
 

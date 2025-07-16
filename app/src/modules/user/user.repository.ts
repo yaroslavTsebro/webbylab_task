@@ -1,7 +1,7 @@
-import { UserInstance } from 'shared/entities/user'
-import { IUserAttributes } from 'shared/contracts/entities/user'
+import { UserInstance } from '../../shared/entities/user'
+import { IUserAttributes } from '../../shared/contracts/entities/user'
 import { ModelStatic } from 'sequelize'
-import { User } from 'system/db/db'
+import { User } from '../../system/db/db'
 
 export class UserRepository {
   private constructor(protected readonly model: ModelStatic<UserInstance>) { }

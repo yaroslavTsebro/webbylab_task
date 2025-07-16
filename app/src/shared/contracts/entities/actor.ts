@@ -1,4 +1,4 @@
-import { ActorInstance } from 'shared/entities/actor'
+import { ActorInstance } from '../../../shared/entities/actor'
 
 
 export class Actor {

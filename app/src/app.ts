@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { sequelize } from './system/db/db'
 import app from './server'
 

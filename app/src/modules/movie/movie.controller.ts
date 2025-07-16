@@ -1,25 +1,28 @@
-import { Request, Response, Router, NextFunction } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { MovieService } from './movie.service'
-import { MovieAttributes, MovieSourceType } from 'shared/entities/movie'
+import { CreateMovieAttributes, MovieSourceType } from '../../shared/entities/movie'
+import { getErrorMessage } from '../../shared/utils/get-error-message'
 
 export class MovieController {
-  private constructor(private readonly service: MovieService) {}
+  private constructor(private readonly service: MovieService) { }
+
   public static init() {
     return new MovieController(MovieService.init())
   }
 
   public create = async (req: Request, res: Response) => {
     try {
-      const { title, year, format } = req.body as MovieAttributes
+      const { title, year, format, actors } = req.body as CreateMovieAttributes
       const userId = req.user?.id!
-  
+
       const movie = await this.service.create({
-        title, year, format, source: { type: MovieSourceType.WEB},
-        actors: []
+        title, year, format, source: { type: MovieSourceType.WEB },
+        actors: actors
       }, userId)
       res.status(201).json(movie)
     } catch (e: any) {
-      res.status(400).json({ error: e.message })
+      console.dir(e)
+      res.status(400).json({ error: getErrorMessage(e) })
     }
   }
 
@@ -29,36 +32,34 @@ export class MovieController {
       if (!movie) return res.status(404).json({ error: 'Not found' })
       res.json(movie)
     } catch (e: any) {
-      res.status(400).json({ error: e.message })
+      res.status(400).json({ error: getErrorMessage(e) })
     }
   }
 
-  public getAllSorted = async (_req: Request, res: Response) => {
+  public uploadFromFile = async (req: Request, res: Response) => {
+    if (!req.file) return res.status(400).json({ error: 'File is required' })
+
     try {
-      const movies = await this.service.getAllSorted()
-      res.json(movies)
-    } catch (e: any) {
-      res.status(400).json({ error: e.message })
+      await this.service.importFromBuffer(req.file, req.user.id)
+      return res.status(200).json({ success: true })
+    } catch (e) {
+      return res.status(500).json({ error: 'Failed to import movies', details: e })
     }
   }
 
-  public findByTitle = async (req: Request, res: Response) => {
+  public getAllSorted = async (req: Request, res: Response) => {
     try {
-      const { title } = req.query
-      const movies = await this.service.findByTitle(String(title))
-      res.json(movies)
-    } catch (e: any) {
-      res.status(400).json({ error: e.message })
-    }
-  }
+      const { title, actor } = req.query as { title?: string; actor?: string }
 
-  public findByActorName = async (req: Request, res: Response) => {
-    try {
-      const { name } = req.query
-      const movies = await this.service.findByActorName(String(name))
+      const movies = await this.service.searchMovies({
+        title: title?.trim(),
+        actor: actor?.trim(),
+        fallbackAll: true
+      })
+
       res.json(movies)
     } catch (e: any) {
-      res.status(400).json({ error: e.message })
+      res.status(400).json({ error: getErrorMessage(e) })
     }
   }
 
@@ -67,11 +68,10 @@ export class MovieController {
       await this.service.delete(Number(req.params.id))
       res.status(204).send()
     } catch (e: any) {
-      res.status(400).json({ error: e.message })
+      res.status(400).json({ error: getErrorMessage(e) })
     }
   }
 
-  // Middleware: проверка, что пользователь владеет фильмом
   public static userOwnsMovie = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?.id
@@ -81,19 +81,7 @@ export class MovieController {
       if (movie.userId !== userId) return res.status(403).json({ error: 'Forbidden: not your movie' })
       next()
     } catch (e: any) {
-      res.status(400).json({ error: e.message })
+      res.status(400).json({ error: getErrorMessage(e) })
     }
   }
 }
-
-const router = Router()
-const controller = MovieController.init()
-
-router.post('/', controller.create)
-router.get('/', controller.getAllSorted)
-router.get('/search/title', controller.findByTitle)
-router.get('/search/actor', controller.findByActorName)
-router.get('/:id', controller.getById)
-router.delete('/:id', MovieController.userOwnsMovie, controller.delete)
-
-export default router

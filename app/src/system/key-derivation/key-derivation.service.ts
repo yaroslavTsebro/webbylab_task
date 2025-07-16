@@ -1,4 +1,4 @@
-import { IKeyDerivationService } from 'shared/contracts/system/key-derivation';
+import { IKeyDerivationService } from '../../shared/contracts/system/key-derivation';
 import { randomBytes, pbkdf2, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 

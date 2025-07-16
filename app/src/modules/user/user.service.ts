@@ -1,8 +1,9 @@
 import { UserFactory } from './user.factory'
 import { UserRepository } from './user.repository'
-import { KeyDerivationService } from 'system/key-derivation/key-derivation.service'
-import { User } from 'shared/contracts/entities/user'
-import { IKeyDerivationService } from 'shared/contracts/system/key-derivation'
+import { KeyDerivationService } from '../../system/key-derivation/key-derivation.service'
+import { User } from '../../shared/contracts/entities/user'
+import { IKeyDerivationService } from '../../shared/contracts/system/key-derivation'
+import { UserInstance } from 'shared/entities/user'
 
 export class UserService {
   private constructor(private readonly userRepository: UserRepository, private readonly keyDerivation: IKeyDerivationService) { }
@@ -26,11 +27,7 @@ export class UserService {
     return new User(rawUser)
   }
 
-  async verifyPassword(email: string, password: string): Promise<boolean> {
-    const user = await this.userRepository.findByEmail(email)
-
-    if (!user) return false
-    
+  async verifyPassword(user: UserInstance, password: string): Promise<boolean> {
     return this.keyDerivation.verify(password, user.password)
   }
 

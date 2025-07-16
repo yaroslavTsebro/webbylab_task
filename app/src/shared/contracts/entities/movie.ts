@@ -1,4 +1,4 @@
-import { MovieFormat, MovieInstance, MovieSource } from 'shared/entities/movie'
+import { MovieFormat, MovieInstance, MovieSource } from '../../../shared/entities/movie'
 
 export class Movie {
   constructor(private readonly movie: MovieInstance) { }

@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import express from 'express'
 import authRouter from './modules/auth'
 import moviesRouter from './modules/movie'

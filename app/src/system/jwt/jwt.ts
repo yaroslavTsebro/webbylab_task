@@ -1,6 +1,6 @@
-import { IJwtPayload, IJwtService, JwtTokens } from '../../shared/contracts/system/jwt';
-import * as jsonwebtoken from 'jsonwebtoken';
-import { envConfig } from '../config/config';
+import { IJwtPayload, IJwtService, JwtTokens } from '../../shared/contracts/system/jwt'
+import * as jsonwebtoken from 'jsonwebtoken'
+import { envConfig } from '../config/config'
 
 const {
   public_key,
@@ -8,56 +8,75 @@ const {
   expireTime,
   refreshTokenExpireTime,
   rtSecret,
-} = envConfig.jwt;
+} = envConfig.jwt
 
 export class JwtService implements IJwtService {
-  private constructor(private readonly jwt: typeof jsonwebtoken) {}
+  private constructor(private readonly jwt: typeof jsonwebtoken) { }
 
   static init(jwtLib: typeof jsonwebtoken = jsonwebtoken): JwtService {
-    return new JwtService(jwtLib);
+    return new JwtService(jwtLib)
   }
 
-  public sign(payload: IJwtPayload): JwtTokens {
-    const accessOptions: jsonwebtoken.SignOptions = {
-      algorithm: 'RS256',
-      expiresIn: expireTime,
-    };
-    const refreshOptions: jsonwebtoken.SignOptions = {
-      expiresIn: refreshTokenExpireTime,
-    };
-
-    const accessToken = this.jwt.sign(
+  public async sign(payload: IJwtPayload): Promise<JwtTokens> {
+    const accessToken = await this.signAsync(
       payload,
       private_key as jsonwebtoken.Secret,
-      accessOptions
-    );
+      {
+        algorithm: 'RS256',
+        expiresIn: expireTime,
+      }
+    )
 
-    const refreshToken = this.jwt.sign(
+    const refreshToken = await this.signAsync(
       payload,
       rtSecret as jsonwebtoken.Secret,
-      refreshOptions
-    );
+      {
+        expiresIn: refreshTokenExpireTime,
+      }
+    )
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken }
   }
 
-  public verifyAccess(token: string): IJwtPayload {
-    const verifyOptions: jsonwebtoken.VerifyOptions = {
-      algorithms: ['RS256'],
-    };
-    const decoded = this.jwt.verify(
+  public async verifyAccess(token: string): Promise<IJwtPayload> {
+    const decoded = await this.verifyAsync(
       token,
       public_key as jsonwebtoken.Secret,
-      verifyOptions
-    );
-    return decoded as IJwtPayload;
+      { algorithms: ['RS256'] }
+    )
+    return decoded as IJwtPayload
   }
 
-  public verifyRefresh(token: string): IJwtPayload {
-    const decoded = this.jwt.verify(
-      token,
-      rtSecret as jsonwebtoken.Secret
-    );
-    return decoded as IJwtPayload;
+  public async verifyRefresh(token: string): Promise<IJwtPayload> {
+    const decoded = await this.verifyAsync(token, rtSecret as jsonwebtoken.Secret)
+    return decoded as IJwtPayload
   }
+
+  private verifyAsync(
+    token: string,
+    secret: jsonwebtoken.Secret,
+    options?: jsonwebtoken.VerifyOptions
+  ): Promise<jsonwebtoken.JwtPayload | string> {
+    return new Promise((resolve, reject) => {
+      jsonwebtoken.verify(token, secret, options || {}, (err, decoded) => {
+        if (err || !decoded) return reject(err)
+        resolve(decoded)
+      })
+    })
+  }
+
+
+  private signAsync(
+    payload: string | object | Buffer,
+    secret: jsonwebtoken.Secret,
+    options?: jsonwebtoken.SignOptions
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      jsonwebtoken.sign(payload, secret, options || {}, (err, token) => {
+        if (err || !token) return reject(err)
+        resolve(token)
+      })
+    })
+  }
+
 }
