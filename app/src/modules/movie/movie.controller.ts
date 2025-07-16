@@ -1,6 +1,6 @@
-import { Request, Response, Router } from 'express'
+import { Request, Response, Router, NextFunction } from 'express'
 import { MovieService } from './movie.service'
-import { MovieAttributes } from '@/shared/entities/movie'
+import { MovieAttributes, MovieSourceType } from 'shared/entities/movie'
 
 export class MovieController {
   private constructor(private readonly service: MovieService) {}
@@ -10,8 +10,13 @@ export class MovieController {
 
   public create = async (req: Request, res: Response) => {
     try {
-      const { title, year, format, source, actors } = req.body as MovieAttributes & { actors: string[] }
-      const movie = await this.service.create({ title, year, format, source }, actors)
+      const { title, year, format } = req.body as MovieAttributes
+      const userId = req.user?.id!
+  
+      const movie = await this.service.create({
+        title, year, format, source: { type: MovieSourceType.WEB},
+        actors: []
+      }, userId)
       res.status(201).json(movie)
     } catch (e: any) {
       res.status(400).json({ error: e.message })
@@ -65,4 +70,30 @@ export class MovieController {
       res.status(400).json({ error: e.message })
     }
   }
+
+  // Middleware: проверка, что пользователь владеет фильмом
+  public static userOwnsMovie = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?.id
+      const movieId = Number(req.params.id)
+      const movie = await MovieService.init().getById(movieId)
+      if (!movie) return res.status(404).json({ error: 'Movie not found' })
+      if (movie.userId !== userId) return res.status(403).json({ error: 'Forbidden: not your movie' })
+      next()
+    } catch (e: any) {
+      res.status(400).json({ error: e.message })
+    }
+  }
 }
+
+const router = Router()
+const controller = MovieController.init()
+
+router.post('/', controller.create)
+router.get('/', controller.getAllSorted)
+router.get('/search/title', controller.findByTitle)
+router.get('/search/actor', controller.findByActorName)
+router.get('/:id', controller.getById)
+router.delete('/:id', MovieController.userOwnsMovie, controller.delete)
+
+export default router

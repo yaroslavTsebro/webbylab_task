@@ -1,8 +1,8 @@
 import { UserFactory } from './user.factory'
 import { UserRepository } from './user.repository'
-import { KeyDerivationService } from '@/system/key-derivation/key-derivation.service'
-import { User } from '@/shared/contracts/entities/user'
-import { IKeyDerivationService } from '@/shared/contracts/system/key-derivation'
+import { KeyDerivationService } from 'system/key-derivation/key-derivation.service'
+import { User } from 'shared/contracts/entities/user'
+import { IKeyDerivationService } from 'shared/contracts/system/key-derivation'
 
 export class UserService {
   private constructor(private readonly userRepository: UserRepository, private readonly keyDerivation: IKeyDerivationService) { }

@@ -1,5 +1,5 @@
-import { IJwtService, RegisterDto, LoginDto, RefreshDto } from '@/shared/contracts/system/jwt'
-import { makeJwtService } from '@/system/jwt/factory'
+import { IJwtService, RegisterDto, LoginDto, RefreshDto } from 'shared/contracts/system/jwt'
+import { makeJwtService } from 'system/jwt/factory'
 import { UserService } from '../user/user.service'
 import { RegisterStrategy, LoginStrategy } from './auth.strategy'
 

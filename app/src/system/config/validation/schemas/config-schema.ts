@@ -9,15 +9,6 @@ export class AppConfigValidationSchema {
   @IsString()
   dbUri!: string
 
-  @IsNotEmpty()
-  @IsInt()
-  @Min(500)
-  dbHealthCheckInterval!: number
-
-  @IsNotEmpty()
-  @IsString()
-  environment!: string
-
   @IsOptional()
   @IsInt()
   appPort?: number

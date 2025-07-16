@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { makeJwtService } from '@/system/jwt/factory'
+import { makeJwtService } from 'system/jwt/factory'
 import { UserService } from '../user/user.service'
 
 export class AuthMiddleware {

@@ -1,6 +1,8 @@
 import { plainToInstance } from 'class-transformer'
 import { validateSync } from 'class-validator'
 import { ValidationError } from 'class-validator'
+import { AppConfig } from '../config'
+import { AppConfigValidationSchema } from './schemas/config-schema'
 
 export const parseError = (validationError: ValidationError) => {
   const propKey = validationError.property
@@ -25,10 +27,6 @@ export const parseError = (validationError: ValidationError) => {
 }
 
 export const validateConfig = (config: AppConfig) => {
-  if (!config.stageName) {
-    throw new Error('stageName is required')
-  }
-
   const configInstance = plainToInstance(AppConfigValidationSchema, config)
   const validationResult = validateSync(configInstance)
 

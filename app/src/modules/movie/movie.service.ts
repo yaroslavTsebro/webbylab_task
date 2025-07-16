@@ -1,6 +1,4 @@
-import { Movie } from '@/shared/contracts/entities/movie'
-import { MovieFactory, MovieFactoryData } from './movie.factory'
-import { MovieRepository } from './movie.repository'
+import { CreateMovieDto, MovieRepository } from './movie.repository'
 
 export class MovieService {
 
@@ -10,10 +8,8 @@ export class MovieService {
     return new MovieService(MovieRepository.init())
   }
 
-  async create(movie: MovieFactoryData) {
-    const raw = MovieFactory.build(movie)
-
-    return new Movie(raw)
+  async create(movie: CreateMovieDto, userId: number) {
+    return this.repo.create(movie, userId)
   }
 
   async getById(id: number) {
