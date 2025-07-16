@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
 
 export class JwtValidationSchema {
   @IsNotEmpty()
@@ -18,10 +18,10 @@ export class JwtValidationSchema {
   rtSecret!: string
 
   @IsNotEmpty()
-  @IsString()
-  expireTime!: string
+  @IsNumber()
+  expireTime!: number
 
   @IsNotEmpty()
-  @IsString()
-  refreshTokenExpireTime!: string
+  @IsNumber()
+  refreshTokenExpireTime!: number
 }

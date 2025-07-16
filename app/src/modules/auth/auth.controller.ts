@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { RegisterDto, LoginDto, RefreshDto } from '@/shared/contracts/system/jwt'
+import { RegisterDto, LoginDto, RefreshDto } from 'shared/contracts/system/jwt'
 import { AuthService } from './auth.service'
 
 export class AuthController {

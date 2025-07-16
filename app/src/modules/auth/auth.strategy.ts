@@ -1,6 +1,6 @@
-import { UserService } from '@/modules/user/user.service'
-import { RegisterDto, LoginDto } from '@/shared/contracts/system/jwt'
-import { User } from '@/shared/contracts/entities/user'
+import { UserService } from 'modules/user/user.service'
+import { RegisterDto, LoginDto } from 'shared/contracts/system/jwt'
+import { User } from 'shared/contracts/entities/user'
 
 export interface AuthStrategy<TPayload, TResult> {
   execute(payload: TPayload): Promise<TResult>

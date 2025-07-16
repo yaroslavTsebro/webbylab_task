@@ -1,8 +1,9 @@
 import { Model, DataTypes, Sequelize } from 'sequelize'
 import { ActorInstance } from './actor'
+import { UserInstance } from './user'
 
-export type MovieFormat = 'VHS' | 'DVD' | 'Blu-ray'
-export type MovieSourceType = 'WEB' | 'FILESYSTEM'
+export enum MovieFormat { VHS = 'VHS', DVD = 'DVD', BLU_RAY = 'Blu-ray' }
+export enum MovieSourceType { FILESYSTEM = 'FILESYSTEM', WEB = 'WEB' }
 
 export interface MovieSource {
   type: MovieSourceType
@@ -17,6 +18,8 @@ export interface MovieAttributes {
   format: MovieFormat
   source: MovieSource
 
+  userId: number
+
   readonly createdAt: Date
   readonly updatedAt: Date
 }
@@ -27,6 +30,7 @@ export interface MovieInstance
     Omit<MovieAttributes, 'id' | 'createdAt' | 'updatedAt'>
   >,
   MovieAttributes {
+  user: UserInstance
   actors: ActorInstance[]
 }
 
@@ -51,6 +55,11 @@ export const MovieModel = (sequelize: Sequelize) =>
     },
     source: {
       type: DataTypes.JSONB,
+      allowNull: false,
+    },
+    userId: {
+      field: 'user_id',
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     createdAt: DataTypes.DATE,

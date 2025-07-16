@@ -1,8 +1,8 @@
-import { MovieAttributes, MovieFormat, MovieInstance, MovieSource } from '@/shared/entities/movie'
-import { Movie, Actor } from '@/system/db/db'
+import { MovieFormat, MovieInstance, MovieSource } from 'shared/entities/movie'
+import { Movie, Actor } from 'system/db/db'
 import { ModelStatic, Op } from 'sequelize'
 
-export class CreateActorDto {
+export class CreateMovieDto {
   title!: string
   year!: number
 
@@ -19,8 +19,8 @@ export class MovieRepository {
     return new MovieRepository(Movie)
   }
 
-  async create(movie: CreateActorDto): Promise<MovieInstance> {
-    const created = await this.model.create(movie)
+  async create(movie: CreateMovieDto, userId: number): Promise<MovieInstance> {
+    const created = await this.model.create({...movie, userId})
     return created
   }
 

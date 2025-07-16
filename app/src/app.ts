@@ -1,13 +1,13 @@
+import { sequelize } from './system/db/db'
 import app from './server'
-import { sequelize } from '@/system/db/db'
 
-const PORT = process.env.APP_PORT || 8050
+const PORT = 80
 
 async function start() {
   try {
     await sequelize.authenticate()
     await sequelize.sync()
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server started on port ${PORT}`)
     })
   } catch (e) {

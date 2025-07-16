@@ -1,5 +1,5 @@
-import { ActorInstance } from '@/shared/entities/actor'
-import { Actor } from '@/system/db/db'
+import { ActorInstance } from 'shared/entities/actor'
+import { Actor } from 'system/db/db'
 import { ModelStatic, Op } from 'sequelize'
 
 export class CreateActorDto {

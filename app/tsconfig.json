@@ -4,11 +4,10 @@
     "module": "commonjs",
 
     "sourceMap": true,
-    "outDir": "./build",
+    "outDir": "./dist",
 
     "strict": true,
 
-    "types": ["jest"],
     "esModuleInterop": true,
 
     "sourceRoot": "./",
@@ -19,7 +18,13 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["src/*"],
+      "@/modules/*": ["src/modules/*"],
+      "@/system/*": ["src/system/*"],
+      "@/shared/*": ["src/shared/*"],
+      "@/types/*": ["src/types/*"],
+      "@/config/*": ["src/system/config/*"],
+      "@/entities/*": ["src/shared/entities/*"]
     },
 
     "allowJs": true,
